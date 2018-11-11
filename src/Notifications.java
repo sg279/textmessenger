@@ -10,16 +10,16 @@ import java.time.*;
 
 public class Notifications {
 
-  private TextArea notifications;
+    private TextArea notifications;
 
-  Notifications(TextArea n) {
-    notifications = n;
-  }
+    Notifications(TextArea n) {
+        notifications = n;
+    }
 
-  void notify(String s) {
-    String t = MessageCheckerCommon.timestamp();
-    s = t + " " + s + "\n";
-    notifications.insert(s, 0); // add to top
-  } // notify()
+    void notify(String s) {
+        String t = MessageCheckerCommon.timestamp();
+        s = t + " " + s + "\n";
+        notifications.insert(s, 0); // add to top
+    } // notify()
 
 } // class Notifications
