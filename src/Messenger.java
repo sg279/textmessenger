@@ -1,6 +1,4 @@
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -19,7 +17,7 @@ public class Messenger implements Runnable {
     private Socket connection;
     private int sleepTime = 100;
 
-    public void sendMessage(String id, String message) {
+    public boolean sendMessage(String id, String message) {
         Socket sendConnection = null;
         //Try the following
         try {
@@ -43,70 +41,50 @@ public class Messenger implements Runnable {
             output = sendConnection.getOutputStream();
             output.write(message.getBytes());
             System.out.println("message sent");
+            sendConnection.close();
+            return true;
         }
         //If an exception is thrown print it
         catch (IOException e) {
-            System.err.println("IO Exception: " + e.getMessage());
+            return false;
         }
     }
 
     public void run() {
         try {
-            server = new ServerSocket(c_.mPort_); // make a socket
+            server = new ServerSocket(21251); // make a socket
+            server.setSoTimeout(10);
             System.out.println("--* Starting server " + server.toString());
-            connection = server.accept();
-            //Set the input stream property to the connection's input stream
-            input = connection.getInputStream();
-            //Instantiate a boolean called clientConnected as true
-            boolean clientConnected = true;
-            //Output that a connection was made and the inet address, host name, and port of the client
-            System.out.println("New connection ... " +
-                    connection.getInetAddress().getHostName() + ":" +
-                    connection.getPort());
-            //While the client connected boolean is true do the following
-            while (clientConnected) {
-                //Create a new array of bytes called buffer
-                byte[] buffer = new byte[bufferSize];
-                //Instantiate an integer called b as 0
-                int b = 0;
-                //If b is less than one do the following
-                if (b < 1) {
-                    //Call the sleep method on the thread with the sleepTime parameter
-                    Thread.sleep(sleepTime);
-                    //Set b to the input stream read to the buffer array
-                    b = input.read(buffer);
-                    //If first item in the array is 0 (null) close the connection and output that the client has
-                    //disconnected, then set clientConnected to false
-                    if (buffer[0] == 0) {
-                        connection.close();
-                        System.out.println("Client disconnected");
-                        clientConnected = false;
-                    }
-
-                }
-
-                //If b is more than 0 do the following
-                if (b > 0) {
-                    //Create a new array of bytes of size b called message
-                    byte[] message = new byte[b];
-                    //Copy the buffer array to the message array
-                    System.arraycopy(buffer, 0, message, 0, b);
-                    //Create a string called s from the message array
-                    String s = new String(message);
-                    incoming.add(s);
-                }
-            }
-
-
         } catch (IOException e) {
             System.err.println("IO Exception: " + e.getMessage());
         }
-        //If exceptions are thrown print them
-        catch (InterruptedException e) {
-            System.err.println("Interrupted Exception: " + e.getMessage());
+        while (true) {
+
+            try {
+                connection = server.accept();
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+                while(reader.ready()) {
+                    incoming.add(reader.readLine());
+                }
+
+
+            }
+            catch (SocketTimeoutException ignored) {
+                // no incoming data - just ignore
+            }
+            catch (NullPointerException ignored){
+
+            }
+            catch(IOException e){
+
+            }
         }
 
+
     }
+
 
     public ArrayList<String> getIncoming() {
         ArrayList<String> incomingArray = new ArrayList<>();

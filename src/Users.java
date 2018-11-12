@@ -30,6 +30,7 @@ public class Users implements Runnable {
 
             // Check the list of users
             ArrayList<String> checklist = HeartBeat.users;
+            userInfo = HeartBeat.userBeacons;
 
             /*
              ** If any of the currently listed users are no longer on the checklist,

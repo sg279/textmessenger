@@ -17,7 +17,7 @@ public class Messages
     String id;
 
     // Where you will type messages.
-    private TextField input;
+    public TextField input;
 
     // Where you will see incoming messages
     private TextArea messages;
@@ -149,18 +149,31 @@ public class Messages
         if (f == null || f.length != 2 ||
                 f[0].length() < 1 || f[1].length() < 1) {
             notifications.notify("tx: Bad message format.");
+            input.setText("");
             return;
         }
-        if(!HeartBeat.users.contains(f[0])){
+        Boolean userOnline = false;
+        for (String user: Users.users.getItems()
+             ) {
+            if(user.equals(f[0])){
+                userOnline=true;
+            }
+        }
+        if(!userOnline){
             notifications.notify("User not found.");
+            input.setText("");
             return;
         }
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss.SSS");
         String now = sdf.format(new Date());
         String message="["+now+"]["+id+"][text]["+f[1]+"]";
 
 
-        messenger.sendMessage(f[0], message);
+        if(!messenger.sendMessage(f[0], message)){
+            notifications.notify("Message failed to send.");
+            return;
+        }
 
         String s = "<- tx " + f[0] + " : " + f[1] + "\n"; // mark outgoing messages - for demo purposes
         messages.insert(s, 0); // top of TextArea
@@ -177,8 +190,6 @@ public class Messages
     public void run() {
         while (true) {
             ArrayList<String> rx = messenger.getIncoming();
-
-
             for (int r = 0; r < rx.size(); ++r) {
                 String m = rx.get(r);
 

@@ -85,6 +85,14 @@ public class MessageCheckerGUI
         p = new Panel();
         p.add(new Label("Users"));
         java.awt.List u = new List(4, false);
+
+        u.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                messages.input.setText(u.getSelectedItem()+":");
+            }
+        });
+
         p.add(u);
         add(p);  // to this Frame
 
