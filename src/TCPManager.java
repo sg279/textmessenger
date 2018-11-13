@@ -6,7 +6,7 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Queue;
 
-public class Messenger implements Runnable {
+public class TCPManager implements Runnable {
     private int timeout = 10;
     private OutputStream output;
     private ServerSocket server;

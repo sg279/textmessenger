@@ -25,7 +25,7 @@ public class Messages
     // Notifications for the application
     private Notifications notifications;
 
-    private Messenger messenger;
+    private TCPManager TCPManager;
 
     private final static int sleepTime = 2000; // ms, 2s between checks
 
@@ -35,8 +35,8 @@ public class Messages
         this.id = id;
 
         notifications = n;
-        messenger = new Messenger();
-        Thread t = new Thread(messenger);
+        TCPManager = new TCPManager();
+        Thread t = new Thread(TCPManager);
         t.start();
     /*
      * The AWT code below lays out the widgets as follows.
@@ -175,7 +175,7 @@ public class Messages
             input.setText("");
             return;
         }
-        if(!messenger.sendMessage(f[0], message)){
+        if(!TCPManager.sendMessage(f[0], message)){
             notifications.notify("Message failed to send.");
             input.setText("");
             return;
@@ -204,7 +204,7 @@ public class Messages
     @Override
     public void run() {
         while (true) {
-            ArrayList<String> rx = messenger.getIncoming();
+            ArrayList<String> rx = TCPManager.getIncoming();
             for (int r = 0; r < rx.size(); ++r) {
                 String m = rx.get(r);
 
@@ -221,7 +221,7 @@ public class Messages
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss.SSS");
                             String now = sdf.format(new Date());
                             String message="["+now+"]["+id+"][unavailable]";
-                            messenger.sendMessage(messageArray[1], message);
+                            TCPManager.sendMessage(messageArray[1], message);
                         }
                         catch(NullPointerException e){}
                     }
