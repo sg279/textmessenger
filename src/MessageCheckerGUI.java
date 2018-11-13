@@ -40,6 +40,7 @@ public class MessageCheckerGUI
 
     public MessageCheckerGUI(String name) {
         super(name + " : notifications and users"); // call the Frame constructor
+        super.addWindowListener(new WindowAdapter() {});
 
     /*
      * The AWT code below lays out the widgets as follows.
@@ -118,6 +119,26 @@ public class MessageCheckerGUI
         p.add(b);
         add(p);
 
+        p = new Panel();
+        Checkbox available = new Checkbox();
+        available.setLabel("Available");
+        available.setState(true);
+        available.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent itemEvent) {
+                if(available.getState()){
+                    HeartBeat.c_.available=true;
+                    b.setLabel("Go offline");
+                    HeartBeat.c_.online=true;
+                }
+                else{
+                    heartBeat.c_.available=false;
+                }
+            }
+        });
+        p.add(available);
+        add(p);
+
         // This is a separate Frame
         messages = new Messages(name, notifications);
         messages.setVisible(true);
@@ -127,6 +148,9 @@ public class MessageCheckerGUI
         heartBeat = new HeartBeat(name);
         t = new Thread(heartBeat);
         t.start();
+
+        ChatViewer chatViewer = new ChatViewer(name);
+        chatViewer.setVisible(true);
 
     } // MessageCheckerGUI()
 

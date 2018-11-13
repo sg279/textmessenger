@@ -7,18 +7,14 @@ import java.util.ArrayList;
 import java.util.Queue;
 
 public class Messenger implements Runnable {
-    private int bufferSize = 140;
     private int timeout = 10;
     private OutputStream output;
-    private InputStream input;
     private ServerSocket server;
     private ArrayList<String> incoming = new ArrayList<>();
-    private Config c_ = new Config();
     private Socket connection;
-    private int sleepTime = 100;
 
     public boolean sendMessage(String id, String message) {
-        Socket sendConnection = null;
+        Socket sendConnection;
         //Try the following
         try {
             String hostname = Users.userInfo.get(id)[2];
@@ -59,26 +55,25 @@ public class Messenger implements Runnable {
             System.err.println("IO Exception: " + e.getMessage());
         }
         while (true) {
+            if(HeartBeat.c_.online) {
+                try {
+                    connection = server.accept();
 
-            try {
-                connection = server.accept();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    while (reader.ready()) {
+                        incoming.add(reader.readLine());
+                    }
+                    connection.close();
 
-                while(reader.ready()) {
-                    incoming.add(reader.readLine());
+
+                } catch (SocketTimeoutException ignored) {
+                    // no incoming data - just ignore
+                } catch (NullPointerException ignored) {
+
+                } catch (IOException e) {
+
                 }
-
-
-            }
-            catch (SocketTimeoutException ignored) {
-                // no incoming data - just ignore
-            }
-            catch (NullPointerException ignored){
-
-            }
-            catch(IOException e){
-
             }
         }
 

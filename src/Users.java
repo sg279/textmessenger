@@ -6,6 +6,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class Users implements Runnable {
@@ -14,6 +15,8 @@ public class Users implements Runnable {
     public static Notifications notifications;
     public static Map<String, String[]> userInfo;
     private final static int sleepTime = 5000; // ms, 5s between checks
+    public static ArrayList<String[]> storedMessages= new ArrayList();
+    private Messenger messenger = new Messenger();
 
     Users(java.awt.List u, Notifications n) {
         users = u;
@@ -61,6 +64,11 @@ public class Users implements Runnable {
              */
             for (int c = 0; c < checklist.size(); ++c) {
                 String s_c = checklist.get(c);
+                for(int i =0; i<storedMessages.size(); i++){
+                    if(storedMessages.get(i)[0].equals(s_c)){
+                        messenger.sendMessage(storedMessages.get(i)[0], storedMessages.get(i)[1]);
+                    }
+                }
                 notifications.notify(s_c + " - online.");
                 users.add(s_c);
             }
