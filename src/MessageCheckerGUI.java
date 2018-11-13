@@ -72,20 +72,20 @@ public class MessageCheckerGUI
          * over layout, but would require a lot more code.
          */
         setLayout(new FlowLayout());
-        setBounds(0, 0, 800, 225); // Size of Frame
+        setBounds(0, 0, 800, 425); // Size of Frame
 
         Panel p; // tmp variable
 
         p = new Panel();
         p.add(new Label("Notifications"));
-        TextArea n = new TextArea("", 4, 80, TextArea.SCROLLBARS_VERTICAL_ONLY);
+        TextArea n = new TextArea("", 10, 80, TextArea.SCROLLBARS_VERTICAL_ONLY);
         p.add(n);
         add(p); // to this Frame
         notifications = new Notifications(n);
 
         p = new Panel();
         p.add(new Label("Users"));
-        java.awt.List u = new List(4, false);
+        java.awt.List u = new List(10, false);
 
         u.addActionListener(new ActionListener() {
             @Override

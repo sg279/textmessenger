@@ -32,7 +32,8 @@ public class Users implements Runnable {
         while (true) { // forever
 
             // Check the list of users
-            ArrayList<String> checklist = HeartBeat.users;
+            ArrayList<String> checklist=new ArrayList<>();
+            checklist.addAll(HeartBeat.users);
             userInfo = HeartBeat.userBeacons;
 
             /*

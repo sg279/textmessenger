@@ -220,7 +220,7 @@ public class Messages
                         try{
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss.SSS");
                             String now = sdf.format(new Date());
-                            String message="["+now+"]["+id+"][text][Sorry, I am unavailable]";
+                            String message="["+now+"]["+id+"][unavailable]";
                             messenger.sendMessage(messageArray[1], message);
                         }
                         catch(NullPointerException e){}
@@ -237,6 +237,9 @@ public class Messages
                         if (messageArray[0].length() < 1 || messageArray[1].length() < 1) {
                             notifications.notify("rx: Bad string received.");
                             continue;
+                        }
+                        if(messageArray[2].equals("unavailable")){
+                            notifications.notify(messageArray[1]+" is unavailable");
                         }
                         try {
                             String filename = System.getProperty("user.dir") + "/chats/";

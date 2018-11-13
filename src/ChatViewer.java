@@ -12,7 +12,7 @@ public class ChatViewer extends Frame
         super(name + " : chats");
         super.addWindowListener(new WindowAdapter() {});
         setLayout(new FlowLayout());
-        setBounds(0, 0, 800, 325); // Size of Frame
+        setBounds(0, 0, 800, 425); // Size of Frame
 
         Panel p; // tmp variable
 
@@ -24,7 +24,7 @@ public class ChatViewer extends Frame
 
         p = new Panel();
         p.add(new Label("Users"));
-        java.awt.List u = new List(4, false);
+        java.awt.List u = new List(10, false);
 
         String directory = System.getProperty("user.dir")+"/chats/";
         for (String user: new File(directory).list()

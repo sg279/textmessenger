@@ -67,6 +67,7 @@ public class Messenger implements Runnable {
                     connection.close();
 
 
+
                 } catch (SocketTimeoutException ignored) {
                     // no incoming data - just ignore
                 } catch (NullPointerException ignored) {
