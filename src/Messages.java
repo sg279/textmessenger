@@ -229,8 +229,13 @@ public class Messages
                         // This is not the best way to check the message format!
                         // For demo purposes only.
                         if (messageArray == null || messageArray.length != 4) {
-                            System.out.println(m);
-                            notifications.notify("rx: Bad string received.");
+                            if(messageArray[2].equals("unavailable")){
+                                notifications.notify(messageArray[1]+" is unavailable");
+                            }
+                            else {
+                                System.out.println(m);
+                                notifications.notify("rx: Bad string received.");
+                            }
                             continue;
                         }
 
@@ -238,9 +243,7 @@ public class Messages
                             notifications.notify("rx: Bad string received.");
                             continue;
                         }
-                        if(messageArray[2].equals("unavailable")){
-                            notifications.notify(messageArray[1]+" is unavailable");
-                        }
+
                         try {
                             String filename = System.getProperty("user.dir") + "/chats/";
                             FileWriter fileWriter = new FileWriter(filename + messageArray[1] + ".txt", true);
