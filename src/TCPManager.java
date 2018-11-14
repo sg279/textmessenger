@@ -30,10 +30,12 @@ public class TCPManager implements Runnable {
             output = sendConnection.getOutputStream();
             output.write(message.getBytes());
             System.out.println("message sent");
+            output.close();
             sendConnection.close();
             return true;
         }
         catch (IOException e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -51,6 +53,7 @@ public class TCPManager implements Runnable {
             //If the user is online wait for a connection to be made
             if(Beacon.c_.online) {
                 try {
+
                     connection = server.accept();
                     //Read any received messages and add them to the array list of received messages
                     BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -61,9 +64,10 @@ public class TCPManager implements Runnable {
                 } catch (SocketTimeoutException ignored) {
                     // no incoming data - just ignore
                 } catch (NullPointerException ignored) {
+                    ignored.printStackTrace();
 
                 } catch (IOException e) {
-
+                    e.printStackTrace();
                 }
             }
         }

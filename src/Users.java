@@ -61,16 +61,24 @@ public class Users implements Runnable {
              */
             for (int c = 0; c < checklist.size(); ++c) {
                 String s_c = checklist.get(c);
+
+                notifications.notify(s_c + " - online.");
+                users.add(s_c);
                 //If there are any messages stored for the user that has just come online, send them the message
                 for(int i =0; i<storedMessages.size(); i++){
                     if(storedMessages.get(i)[0].equals(s_c)){
                         String receiverID = storedMessages.get(i)[0];
-                        TCPManager.sendMessage(receiverID, storedMessages.get(i)[1]);
+                        try {
+                            Thread.sleep(200);
+                        }
+                        catch(Exception e){};
+                        if(!TCPManager.sendMessage(receiverID, storedMessages.get(i)[1])){
+                            notifications.notify("Message failed to send.");
+                        }
+                        storedMessages.remove(i);
                         notifications.notify("Stored message sent to "+receiverID);
                     }
                 }
-                notifications.notify(s_c + " - online.");
-                users.add(s_c);
             }
             checklist.clear(); // not strictly necessary
 

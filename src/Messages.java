@@ -32,7 +32,8 @@ public class Messages
 
     Messages(String id, Notifications n) {
         super(id + " : messages"); // call the Frame constructor
-        super.addWindowListener(new WindowAdapter() {});
+        super.addWindowListener(new WindowAdapter() {
+        });
         this.id = id;
         notifications = n;
 
@@ -161,42 +162,42 @@ public class Messages
         //Create the message string from the timestamp, the user's ID, and the text entered
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss.SSS");
         String now = sdf.format(new Date());
-        String message="["+now+"]["+id+"][text]["+f[1]+"]";
+        String message = "[" + now + "][" + id + "][text][" + f[1] + "]";
 
         //Check the user ID is in the list of online users in the user's class
         Boolean userOnline = false;
-        for (String user: Users.users.getItems()
-             ) {
-            if(user.equals(f[0])){
-                userOnline=true;
+        for (String user : Users.users.getItems()
+        ) {
+            if (user.equals(f[0])) {
+                userOnline = true;
             }
         }
         String storedOrSent = "Message sent to: ";
         //If the user isn't online add the message to the list of stored messages to be sent to the user when they go online
-        if(!userOnline){
+        if (!userOnline) {
             notifications.notify("User not found or is offline.");
-            message="["+now+"]["+id+"][stored-text]["+f[1]+"]";
+            message = "[" + now + "][" + id + "][stored_text][" + f[1] + "]";
             String[] storedMessage = {f[0], message};
             Users.storedMessages.add(storedMessage);
             input.setText("");
             storedOrSent = "Message stored to send to: ";
         }
         //Attempt to send the message with the TCP manager and notify the user and clear the input field if the message fails to send
-        else if(!TCPManager.sendMessage(f[0], message)){
+        else if (!TCPManager.sendMessage(f[0], message)) {
             notifications.notify("Message failed to send.");
             input.setText("");
             return;
         }
         //If the message sends or is stored add it to the chat with that user
-        try{
-            String filename = System.getProperty("user.dir")+"/chats/";
-            FileWriter fileWriter = new FileWriter(filename+f[0]+".txt", true);
+        try {
+            String filename = System.getProperty("user.dir") + "/chats/";
+            FileWriter fileWriter = new FileWriter(filename + f[0] + ".txt", true);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            bufferedWriter.write(now+" "+id+" : "+f[1]+"\n");
+            bufferedWriter.write(now + " " + id + " : " + f[1] + "\n");
             bufferedWriter.close();
             fileWriter.close();
+        } catch (Exception e) {
         }
-        catch (Exception e){}
 
         String s = "<- tx " + f[0] + " : " + f[1] + "\n"; // mark outgoing messages - for demo purposes
         messages.insert(s, 0); // top of TextArea
@@ -223,27 +224,26 @@ public class Messages
                     m = m.replaceFirst("\\[", "");
                     String[] messageArray = m.split("\\[");
                     //If the user is marked as unavailable respond to the message telling the sender that the user is unavailable
-                    if(!Beacon.c_.available){
-                        try{
+                    if (!Beacon.c_.available) {
+                        try {
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss.SSS");
                             String now = sdf.format(new Date());
-                            String message="["+now+"]["+id+"][unavailable]";
+                            String message = "[" + now + "][" + id + "][unavailable]";
                             TCPManager.sendMessage(messageArray[1], message);
+                        } catch (NullPointerException e) {
                         }
-                        catch(NullPointerException e){}
-                    }
-                    else {
+                    } else {
                         //Check if the message isn't formatted as a standard message
                         if (messageArray == null || messageArray.length != 4) {
                             //If the message received is a message formatted saying the receiver is unavailable notify the user
-                            if(messageArray[2].equals("unavailable")){
-                                notifications.notify(messageArray[1]+" is unavailable");
-                                try{
-                                    String filename = System.getProperty("user.dir")+"/chats/"+messageArray[1]+".txt";
+                            if (messageArray[2].equals("unavailable")) {
+                                notifications.notify(messageArray[1] + " is unavailable");
+                                try {
+                                    String filename = System.getProperty("user.dir") + "/chats/" + messageArray[1] + ".txt";
                                     File file = new File(filename);
                                     file.delete();
+                                } catch (Exception e) {
                                 }
-                                catch (Exception e){}
                             }
                             //Otherwise notify the user that a bad message was received
                             else {
@@ -257,23 +257,37 @@ public class Messages
                             notifications.notify("rx: Bad string received.");
                             continue;
                         }
-                        //Save the received message to the corresponding chat, notify the user that a message was received and display the message
-                        try {
-                            String filename = System.getProperty("user.dir") + "/chats/";
-                            FileWriter fileWriter = new FileWriter(filename + messageArray[1] + ".txt", true);
-                            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-                            bufferedWriter.write(messageArray[0] + " " + messageArray[1] + " : " + messageArray[3] + "\n");
-                            bufferedWriter.close();
-                            fileWriter.close();
-                        } catch (Exception e) {
+                        Boolean userOnline = true;
+                        if (messageArray[2].equals("stored_text")) {
+                            notifications.notify("Received a stored message from: " + messageArray[1] + " sent at " + messageArray[0]);
+                            String s = "-> rx " + messageArray[1] + " : " + messageArray[3] + "\n";
+                            messages.insert(s, 0);
                         }
-                        if(messageArray[2].equals("stored-text")){
-                            notifications.notify("Received a stored message from: " + messageArray[1]+" sent at "+messageArray[0]);
+                        //Display the message if the user is online
+                        else if (Users.userInfo.keySet().contains(messageArray[1])) {
+                            notifications.notify("Received a message from: " + messageArray[1]);
+
+                            String s = "-> rx " + messageArray[1] + " : " + messageArray[3] + "\n";
+                            messages.insert(s, 0);
                         }
-                        notifications.notify("Received a message from: " + messageArray[1]);
-                        String s = "-> rx " + messageArray[1] + " : " + messageArray[3] + "\n";
-                        messages.insert(s, 0);
+                        else {
+                            userOnline = false;
+                        }
+                        if (userOnline) {
+                            //Save the received message to the corresponding chat, notify the user that a message was received and display the message
+                            try {
+                                String filename = System.getProperty("user.dir") + "/chats/";
+                                FileWriter fileWriter = new FileWriter(filename + messageArray[1] + ".txt", true);
+                                BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+                                bufferedWriter.write(messageArray[0] + " " + messageArray[1] + " : " + messageArray[3] + "\n");
+                                bufferedWriter.close();
+                                fileWriter.close();
+                            } catch (Exception e) {
+                            }
+                        }
+
                     }
+
 
                 } //m.length() > 0
 

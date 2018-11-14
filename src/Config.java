@@ -18,7 +18,7 @@ public class Config {
     // https://www.iana.org/assignments/multicast-addresses/multicast-addresses.xhtml
     // 239.0.0.0 is organisation-local scope
     // these default values could be overriden in a config file
-    public String mAddr_ = "239.42.42.42"; // CS2003 whole class gorup
+    public String mAddr_ = "239.42.42.43"; // CS2003 whole class gorup
     public int mPort_ = 10101; // random(ish)
     public int ttl_ = 4; // plenty for the lab
     public int soTimeout_ = 1; // ms
