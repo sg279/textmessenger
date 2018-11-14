@@ -1,5 +1,5 @@
 /*
-  HeartBeat - multicast goop wrapper.
+  Beacon - multicast goop wrapper.
 
   Saleem Bhatti, Oct 2018
 

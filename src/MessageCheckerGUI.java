@@ -5,7 +5,6 @@
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
 
 /*
  * For convenience, a list of relevant documentation for AWT widgest used.
@@ -36,7 +35,8 @@ public class MessageCheckerGUI
     // Where general information and notifications are displayed.
     private Notifications notifications;
 
-    private HeartBeat heartBeat;
+    //Create a Beacon property
+    private Beacon beacon;
 
     public MessageCheckerGUI(String name) {
         super(name + " : notifications and users"); // call the Frame constructor
@@ -76,6 +76,9 @@ public class MessageCheckerGUI
 
         Panel p; // tmp variable
 
+        /**
+         * This panel displays the notification the user receives
+         */
         p = new Panel();
         p.add(new Label("Notifications"));
         TextArea n = new TextArea("", 10, 80, TextArea.SCROLLBARS_VERTICAL_ONLY);
@@ -83,72 +86,98 @@ public class MessageCheckerGUI
         add(p); // to this Frame
         notifications = new Notifications(n);
 
+
+        /**
+         * This panel displays the users that are online in a java.awt list
+         */
         p = new Panel();
         p.add(new Label("Users"));
         java.awt.List u = new List(10, false);
-
+        //Add an action listener to the list of users that enters the user's name is the messages bar when clicked
         u.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 messages.input.setText(u.getSelectedItem()+":");
             }
         });
-
         p.add(u);
         add(p);  // to this Frame
-
+        //Run an instance of a Users class in its own thread
         users = new Users(u, notifications);
         Thread t = new Thread(users); // let it look after itself
         t.start();
 
+
+        /**
+         * This panel contains the button that allows the user to go offline
+         */
         p = new Panel();
         Button b = new Button();
         b.setLabel("Go offline");
+        //Add an action listener that toggles the user's online status in the config file and the button label to match
         b.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                if (heartBeat.c_.online) {
+                if (beacon.c_.online) {
                     b.setLabel("Go online");
-                    heartBeat.c_.online = false;
+                    beacon.c_.online = false;
                 } else {
                     b.setLabel("Go offline");
-                    heartBeat.c_.online = true;
+                    beacon.c_.online = true;
                 }
             }
         });
         p.add(b);
         add(p);
 
+
+        /**
+         * This panel contains a checkbox that allows the user to mark themselves as unavailable
+         */
         p = new Panel();
         Checkbox available = new Checkbox();
         available.setLabel("Available");
         available.setState(true);
+        //Add an action listener to change the user's availability status in the beacon's
+        //config property to match the checkbox when it is changed
         available.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent itemEvent) {
+                //When the user sets themselves to available also set online to true
                 if(available.getState()){
-                    HeartBeat.c_.available=true;
+                    Beacon.c_.available=true;
                     b.setLabel("Go offline");
-                    HeartBeat.c_.online=true;
+                    Beacon.c_.online=true;
                 }
                 else{
-                    heartBeat.c_.available=false;
+                    beacon.c_.available=false;
                 }
             }
         });
         p.add(available);
         add(p);
 
-        // This is a separate Frame
+
+        /**
+         * Create and display a messages window and run an instance of the messages class in a new thread
+         */
         messages = new Messages(name, notifications);
         messages.setVisible(true);
         t = new Thread(messages); // let it look after itself
         t.start();
 
-        heartBeat = new HeartBeat(name);
-        t = new Thread(heartBeat);
+
+        /**
+         * Set the beacon property to a new beacon and run the beacon in a new thread
+         */
+        beacon = new Beacon(name);
+        t = new Thread(beacon);
         t.start();
 
+
+        /**
+         * Create a new chat viewer window and display it
+         */
         ChatViewer chatViewer = new ChatViewer(name);
         chatViewer.setVisible(true);
 

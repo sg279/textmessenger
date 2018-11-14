@@ -29,8 +29,8 @@ public class Users implements Runnable {
 
             // Check the list of users
             ArrayList<String> checklist=new ArrayList<>();
-            checklist.addAll(HeartBeat.users);
-            userInfo = HeartBeat.userBeacons;
+            checklist.addAll(Beacon.users);
+            userInfo = Beacon.userBeacons;
 
             /*
              ** If any of the currently listed users are no longer on the checklist,
@@ -61,6 +61,7 @@ public class Users implements Runnable {
              */
             for (int c = 0; c < checklist.size(); ++c) {
                 String s_c = checklist.get(c);
+                //If there are any messages stored for the user that has just come online, send them the message
                 for(int i =0; i<storedMessages.size(); i++){
                     if(storedMessages.get(i)[0].equals(s_c)){
                         TCPManager.sendMessage(storedMessages.get(i)[0], storedMessages.get(i)[1]);

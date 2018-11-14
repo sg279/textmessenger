@@ -1,5 +1,5 @@
 /*
-  HeartBeat v2 - Config information
+  Beacon v2 - Config information
 
   Saleem Bhatti, Oct 2018
 
