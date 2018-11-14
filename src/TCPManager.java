@@ -57,6 +57,7 @@ public class TCPManager implements Runnable {
                     while (reader.ready()) {
                         incoming.add(reader.readLine());
                     }
+                    //reader.close();
                     connection.close();
 
 

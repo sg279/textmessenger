@@ -237,6 +237,12 @@ public class Messages
                             //If the message received is a message formatted saying the receiver is unavailable notify the user
                             if(messageArray[2].equals("unavailable")){
                                 notifications.notify(messageArray[1]+" is unavailable");
+                                try{
+                                    String filename = System.getProperty("user.dir")+"/chats/"+messageArray[1]+".txt";
+                                    File file = new File(filename);
+                                    file.delete();
+                                }
+                                catch (Exception e){}
                             }
                             //Otherwise notify the user that a bad message was received
                             else {
