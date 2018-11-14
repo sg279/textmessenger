@@ -110,12 +110,14 @@ public class Beacon implements Runnable{
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss.SSS");
         String now = sdf.format(new Date());
         //Set the user status based on the config property
-        String status = "online";
-        if(!c_.available){
-            status="unavailable";
-        }
-        if (!c_.online) {
-            status = "offline";
+        String status = "offline";
+        if (c_.online) {
+            if(!c_.available){
+                status="unavailable";
+            }
+            else {
+                status = "online";
+            }
         }
         String s = "[" + now + "][" + userName + "][" + status + "][" + c_.hostInfo_ + "][21251]";
         return s;

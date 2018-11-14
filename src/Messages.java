@@ -175,6 +175,7 @@ public class Messages
         //If the user isn't online add the message to the list of stored messages to be sent to the user when they go online
         if(!userOnline){
             notifications.notify("User not found or is offline.");
+            message="["+now+"]["+id+"][stored-text]["+f[1]+"]";
             String[] storedMessage = {f[0], message};
             Users.storedMessages.add(storedMessage);
             input.setText("");
@@ -265,6 +266,9 @@ public class Messages
                             bufferedWriter.close();
                             fileWriter.close();
                         } catch (Exception e) {
+                        }
+                        if(messageArray[2].equals("stored-text")){
+                            notifications.notify("Received a stored message from: " + messageArray[1]+" sent at "+messageArray[0]);
                         }
                         notifications.notify("Received a message from: " + messageArray[1]);
                         String s = "-> rx " + messageArray[1] + " : " + messageArray[3] + "\n";

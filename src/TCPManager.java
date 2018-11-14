@@ -57,11 +57,7 @@ public class TCPManager implements Runnable {
                     while (reader.ready()) {
                         incoming.add(reader.readLine());
                     }
-                    //reader.close();
                     connection.close();
-
-
-
                 } catch (SocketTimeoutException ignored) {
                     // no incoming data - just ignore
                 } catch (NullPointerException ignored) {

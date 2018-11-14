@@ -64,7 +64,9 @@ public class Users implements Runnable {
                 //If there are any messages stored for the user that has just come online, send them the message
                 for(int i =0; i<storedMessages.size(); i++){
                     if(storedMessages.get(i)[0].equals(s_c)){
-                        TCPManager.sendMessage(storedMessages.get(i)[0], storedMessages.get(i)[1]);
+                        String receiverID = storedMessages.get(i)[0];
+                        TCPManager.sendMessage(receiverID, storedMessages.get(i)[1]);
+                        notifications.notify("Stored message sent to "+receiverID);
                     }
                 }
                 notifications.notify(s_c + " - online.");
